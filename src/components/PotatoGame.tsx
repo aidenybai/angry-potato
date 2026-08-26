@@ -21,7 +21,7 @@ function Trajectory({ pullPosition }: { pullPosition: THREE.Vector3 }) {
     const velocity = REST_POSITION.clone()
       .sub(pullPosition)
       .multiplyScalar(LAUNCH_POWER)
-    const result: THREE.Vector3[] = []
+    const result: { id: number; position: THREE.Vector3 }[] = []
 
     for (let index = 1; index <= 22; index += 1) {
       const time = index * 0.105
@@ -31,7 +31,7 @@ function Trajectory({ pullPosition }: { pullPosition: THREE.Vector3 }) {
         .add(new THREE.Vector3(0, -0.5 * GRAVITY * time * time, 0))
 
       if (point.y < FLOOR_Y + POTATO_RADIUS * 0.4) break
-      result.push(point)
+      result.push({ id: index, position: point })
     }
 
     return result
@@ -39,10 +39,10 @@ function Trajectory({ pullPosition }: { pullPosition: THREE.Vector3 }) {
 
   return (
     <group>
-      {points.map((point, index) => {
+      {points.map(({ id, position: point }, index) => {
         const fade = 1 - index / Math.max(points.length, 1)
         return (
-          <mesh key={index} position={point} scale={0.045 + fade * 0.045}>
+          <mesh key={id} position={point} scale={0.045 + fade * 0.045}>
             <sphereGeometry args={[1, 10, 10]} />
             <meshBasicMaterial
               color="#fff4c8"
@@ -145,7 +145,7 @@ export function PotatoGame() {
     const projected = new THREE.Vector3()
     event.ray.intersectPlane(DRAG_PLANE, projected)
 
-    const pull = projected.sub(REST_POSITION)
+    const pull = projected.addScaledVector(REST_POSITION, -1)
     if (pull.length() > DRAG_LIMIT) pull.setLength(DRAG_LIMIT)
     pull.y = Math.max(pull.y, FLOOR_Y + POTATO_RADIUS)
 
@@ -155,7 +155,10 @@ export function PotatoGame() {
   const handlePointerDown = (event: ThreeEvent<PointerEvent>) => {
     if (mode !== 'idle') return
     event.stopPropagation()
-    event.target.setPointerCapture(event.pointerId)
+    const captureTarget = event.target as (EventTarget & {
+      setPointerCapture(pointerId: number): void
+    }) | null
+    captureTarget?.setPointerCapture(event.pointerId)
     pointerStart.current = { x: event.clientX, y: event.clientY }
     maximumMovement.current = 0
     setMode('dragging')
@@ -181,7 +184,10 @@ export function PotatoGame() {
   const handlePointerUp = (event: ThreeEvent<PointerEvent>) => {
     if (mode !== 'dragging') return
     event.stopPropagation()
-    event.target.releasePointerCapture(event.pointerId)
+    const captureTarget = event.target as (EventTarget & {
+      releasePointerCapture(pointerId: number): void
+    }) | null
+    captureTarget?.releasePointerCapture(event.pointerId)
 
     if (maximumMovement.current < CLICK_THRESHOLD) {
       beginBurst()
@@ -190,7 +196,7 @@ export function PotatoGame() {
 
     velocity.current
       .copy(REST_POSITION)
-      .sub(position.current)
+      .addScaledVector(position.current, -1)
       .multiplyScalar(LAUNCH_POWER)
     bounceSquash.current = -0.2
     settleTime.current = 0

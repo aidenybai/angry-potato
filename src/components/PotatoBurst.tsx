@@ -3,6 +3,7 @@ import { useRef, useState } from 'react'
 import * as THREE from 'three'
 
 type BurstParticle = {
+  id: string
   position: THREE.Vector3
   velocity: THREE.Vector3
   life: number
@@ -28,6 +29,7 @@ function makeParticle(origin: THREE.Vector3): BurstParticle {
   const force = 3.8 + Math.random() * 4.3
 
   return {
+    id: crypto.randomUUID(),
     position: origin
       .clone()
       .add(
@@ -107,7 +109,7 @@ export function PotatoBurst({
     <group>
       {particles.map((particle, index) => (
         <sprite
-          key={index}
+          key={particle.id}
           ref={(sprite) => {
             sprites.current[index] = sprite
           }}
