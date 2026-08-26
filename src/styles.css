@@ -1,0 +1,140 @@
+:root {
+  font-family:
+    Inter, ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, sans-serif;
+  color: #fff7db;
+  background: #efae65;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  min-width: 320px;
+}
+
+button,
+canvas {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.playground {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 50% 20%, #f9cf84 0%, transparent 48%),
+    #efae65;
+}
+
+.playground::after {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  box-shadow:
+    inset 0 -15vh 18vh rgb(93 43 37 / 12%),
+    inset 0 0 10vw rgb(107 52 38 / 11%);
+}
+
+.scene {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+}
+
+.scene canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  outline: none;
+  touch-action: none;
+}
+
+.scene canvas:active {
+  cursor: grabbing;
+}
+
+.title-card {
+  position: absolute;
+  z-index: 3;
+  top: clamp(1.4rem, 4vw, 3rem);
+  left: 50%;
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  padding: 0.65rem 1rem 0.72rem;
+  text-align: center;
+  text-shadow: 0 2px 18px rgb(88 43 32 / 24%);
+  transform: translateX(-50%);
+  user-select: none;
+  pointer-events: none;
+}
+
+.eyebrow {
+  margin: 0 0 0.28rem;
+  color: rgb(103 51 38 / 72%);
+  font-size: 0.67rem;
+  font-weight: 850;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.title-card h1 {
+  margin: 0;
+  color: #fff6d7;
+  font-size: clamp(0.95rem, 2.5vw, 1.25rem);
+  font-weight: 760;
+  letter-spacing: -0.025em;
+}
+
+.title-card h1 span {
+  display: inline-block;
+  margin-inline: 0.18em;
+  color: rgb(110 54 40 / 55%);
+}
+
+.touch-note {
+  position: absolute;
+  z-index: 3;
+  bottom: max(1.1rem, env(safe-area-inset-bottom));
+  left: 50%;
+  margin: 0;
+  color: rgb(255 244 211 / 64%);
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+  user-select: none;
+  pointer-events: none;
+}
+
+@media (max-height: 520px) {
+  .title-card {
+    top: 0.45rem;
+  }
+
+  .touch-note {
+    bottom: 0.55rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .playground::after {
+    box-shadow: inset 0 -12vh 16vh rgb(93 43 37 / 10%);
+  }
+}
